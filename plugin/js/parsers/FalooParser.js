@@ -16,13 +16,11 @@ class FalooParser extends Parser {
 
         let tocDom = (await HttpClient.wrapFetch(tocUrl)).responseXML;
 
-
         let nodes = [...tocDom.querySelectorAll("div.c_con_list")];
 
         let chapters = [];
 
         for (let node of nodes) {
-
             //`div.c_con_li_detail_p a` = Free | `a.c_con_li_detail` = VIP
             let links = node.querySelectorAll("div.c_con_li_detail_p a, a.c_con_li_detail");
 
