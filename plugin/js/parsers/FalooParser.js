@@ -16,20 +16,24 @@ class FalooParser extends Parser {
 
         let tocDom = (await HttpClient.wrapFetch(tocUrl)).responseXML;
 
+        //Get all volumes and the VIP header, in order.
         let nodes = [...tocDom.querySelectorAll("div.c_con_list, .c_con_viptitle")];
 
         let isVipReached = false;
         let chapters = [];
 
         for (let node of nodes) {
+            //Find VIP header, all volumes after this only contains VIP chapters.
             if (node.classList.contains("c_con_viptitle")) {
                 isVipReached = true;
                 continue;
             }
 
+            //`div.c_con_li_detail_p a` = Free chapters? `a.c_con_li_detail` = VIP chapters?
             let links = node.querySelectorAll("div.c_con_li_detail_p a, a.c_con_li_detail");
 
             for (let link of links) {
+                //Get non-truncated chapter from span.
                 let span = link.querySelector("span");
                 let title = span.textContent.trim();
 
