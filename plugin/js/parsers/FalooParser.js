@@ -16,20 +16,14 @@ class FalooParser extends Parser {
 
         let tocDom = (await HttpClient.wrapFetch(tocUrl)).responseXML;
 
-        //Get all volumes and the VIP header, in order.
-        let nodes = [...tocDom.querySelectorAll("div.c_con_list, .c_con_viptitle")];
 
-        let isVipReached = false;
+        let nodes = [...tocDom.querySelectorAll("div.c_con_list")];
+
         let chapters = [];
 
         for (let node of nodes) {
-            //Find VIP header, all volumes after this only contains VIP chapters.
-            if (node.classList.contains("c_con_viptitle")) {
-                isVipReached = true;
-                continue;
-            }
 
-            //`div.c_con_li_detail_p a` = Free chapters? `a.c_con_li_detail` = VIP chapters?
+            //`div.c_con_li_detail_p a` = Free | `a.c_con_li_detail` = VIP
             let links = node.querySelectorAll("div.c_con_li_detail_p a, a.c_con_li_detail");
 
             for (let link of links) {
@@ -40,7 +34,7 @@ class FalooParser extends Parser {
                 chapters.push({
                     sourceUrl: link.href, 
                     title: title,
-                    isIncludeable: !isVipReached
+                    isIncludeable: !link.classList.contains("c_con_li_detail")
                 });
             }
         }
