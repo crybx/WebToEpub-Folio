@@ -53,16 +53,16 @@ class NoveldexParser extends Parser { // eslint-disable-line no-unused-vars
          * 
          * @type { NodeListOf<HTMLAnchorElement> }
          */
-        let chapterLinksElements = dom.querySelectorAll("div[id] div[data-state] a[href*='chapter']:not(:has(svg.lucide-lock))");
+        const chapterLinksElements = dom.querySelectorAll("div[id] div[data-state] a[href*='chapter']:not(:has(svg.lucide-lock))");
 
-        let chapterLinks = Array.from(chapterLinksElements, a => {
+        const chapterLinks = Array.from(chapterLinksElements, a => {
             /**
              * The separate the queries are needed because the first-of-type
              * doesn't work in an all selector when the spans are are nested.
              * 
              * @type { NodeListOf<HTMLSpanElement> }
              */
-            let titleSpans = a.querySelector("div:first-of-type").querySelectorAll("span");
+            const titleSpans = a.querySelector("div:first-of-type").querySelectorAll("span");
 
             return {
                 sourceUrl: a.href,
@@ -81,7 +81,7 @@ class NoveldexParser extends Parser { // eslint-disable-line no-unused-vars
         const scripts = Array.from(dom.querySelectorAll("script:not([src])"), script => script.innerHTML);
 
         // Look for blocks of text enclosed by invisible characters.
-        let mainRegex = /(?:[\uFEFF\u200B\u200C\u200D]+)(.+?)(?:[\uFEFF\u200B\u200C\u200D]+)/;
+        const mainRegex = /(?:[\uFEFF\u200B\u200C\u200D]+)(.+?)(?:[\uFEFF\u200B\u200C\u200D]+)/;
 
         let foundContent = null;
         for (const script of scripts) {
@@ -99,7 +99,7 @@ class NoveldexParser extends Parser { // eslint-disable-line no-unused-vars
         const unescaped = JSON.parse(`["${foundContent}"]`)[0];
 
         // Parse partially unescaped HTML.
-        let elementified = document.createElement("div");
+        const elementified = dom.createElement("div");
         elementified.innerHTML = unescaped;
 
         // Unescape HTML-escaped tags, and remove nested <p> tags.
@@ -115,7 +115,7 @@ class NoveldexParser extends Parser { // eslint-disable-line no-unused-vars
      */
     extractTitleImpl(dom) {
         /** @type { HTMLHeadingElement } */
-        let storyTitle = dom.querySelector("main h1:first-of-type");
+        const storyTitle = dom.querySelector("main h1:first-of-type");
         
         return storyTitle;
     }
@@ -136,9 +136,9 @@ class NoveldexParser extends Parser { // eslint-disable-line no-unused-vars
          * Translator team's name is stored in a massive escaped JSON blob under
          * team -> name.
          */
-        let translator = /(?:\\"team\\":.+?\\"name\\":\\")(.*?)(?:\\")/.exec(dom.body.innerHTML);
+        const translator = /(?:\\"team\\":.+?\\"name\\":\\")(.*?)(?:\\")/.exec(dom.body.innerHTML);
 
-        const combined = [author, translator[1]].filter(s => s != null && s !== "").join(", ");
+        const combined = [author, translator?.[1]].filter(s => s != null && s !== "").join(", ");
 
         return combined !== "" ? combined : super.extractAuthor(dom);
     }
