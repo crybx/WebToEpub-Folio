@@ -1,7 +1,5 @@
 "use strict";
 
-// Use one or more of these to specify when the parser is to be used
-
 parserFactory.register("lightnovelworld.org", () => new LightNovelWorldOrgParser());
 
 class LightNovelWorldOrgParser extends Parser {
@@ -61,10 +59,6 @@ class LightNovelWorldOrgParser extends Parser {
         let authorText = authorLabel?.textContent?.trim() ?? super.extractAuthor(dom);
         // Remove "Author: " prefix if present
         return authorText.replace(/^Author:\s*/i, "");
-    }
-
-    extractLanguage(dom) {
-        return dom.querySelector("html").getAttribute("lang");
     }
 
     extractSubject(dom) {

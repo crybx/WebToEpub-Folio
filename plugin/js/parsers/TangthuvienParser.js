@@ -111,17 +111,8 @@ class TangThuVienParser extends Parser {
     }
 
     findCoverImageUrl(dom) {
-        let img = dom.querySelector("#bookImg img");
-        
-        if (!img) {
-            img = dom.querySelector(".book-img img");
-        }
-
-        if (img && img.src) {
-            return img.src;
-        }
-
-        return util.getFirstImgSrc(dom, "meta[property='og:image']");
+        return util.getFirstImgSrc(dom, "#bookImg") ||
+            util.getFirstImgSrc(dom, ".book-img");
     }
 
     findChapterTitle(dom) {

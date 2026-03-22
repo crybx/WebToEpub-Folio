@@ -74,7 +74,7 @@ class TruyenMoiKKParser extends Parser {
         if (metaThumb && metaThumb.content) {
             return metaThumb.content;
         }
-        return util.getFirstImgSrc(dom, ".book img[itemprop='image']");
+        return util.getFirstImgSrc(dom, ".book");
     }
 
     findChapterTitle(dom) {
@@ -85,10 +85,6 @@ class TruyenMoiKKParser extends Parser {
     extractSubject(dom) {
         let genres = Array.from(dom.querySelectorAll("a[itemprop='genre']"));
         return genres.map(a => a.textContent.trim()).join(", ");
-    }
-
-    extractDescription(dom) {
-        return dom.querySelector(".desc-text")?.textContent.trim() || super.extractDescription(dom);
     }
 
     getInformationEpubItemChildNodes(dom) {
