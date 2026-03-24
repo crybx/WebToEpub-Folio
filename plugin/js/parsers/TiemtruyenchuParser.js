@@ -8,32 +8,11 @@ class TiemTruyenChuParser extends Parser {
     }
 
     async getChapterUrls(dom) {
-        let chapters = [];
-        let addedUrls = new Set();
-        let baseUrl = "https://tiemtruyenchu.com";
-        
-        let links = Array.from(dom.querySelectorAll("a.chapter-item-link"));
-        
-        links.forEach(link => {
-            let href = link.getAttribute("href");
-            if (href) {
-                let fullUrl = new URL(href, baseUrl).href;
-                if (!addedUrls.has(fullUrl)) {
-                    let chapNum = parseInt(link.getAttribute("data-chap-num")) || 0;
-                    
-                    chapters.push({
-                        title: link.textContent.trim(),
-                        sourceUrl: fullUrl,
-                        chapNum: chapNum 
-                    });
-                    addedUrls.add(fullUrl);
-                }
-            }
-        });
-        
-        chapters.sort((a, b) => a.chapNum - b.chapNum);
-        
-        return chapters;
+        return Array.from(dom.querySelectorAll(".chapter-page a.chapter-item-link"))
+            .map(link => ({
+                title: link.textContent.trim(),
+                sourceUrl: link.href,
+            }));
     }
 
     extractTitleImpl(dom) {
@@ -51,14 +30,7 @@ class TiemTruyenChuParser extends Parser {
     }
 
     findCoverImageUrl(dom) {
-        let img = dom.querySelector(".story-poster");
-        if (img) {
-            let src = img.getAttribute("src");
-            if (src) {
-                return new URL(src, "https://tiemtruyenchu.com").href;
-            }
-        }
-        return super.findCoverImageUrl(dom);
+        return util.getFirstImgSrc(dom, ".story-header");
     }
 
     findChapterTitle(dom) {
@@ -67,11 +39,11 @@ class TiemTruyenChuParser extends Parser {
     }
 
     findContent(dom) {
-        let content = dom.querySelector("#chapter-content") || dom.querySelector(".chapter-content") || dom.querySelector(".content-text");
-        if (content) {
-            content.querySelectorAll(".ads").forEach(e => e.remove());
-            return content;
-        }
-        return super.findContent(dom);
+        return dom.querySelector("#chapter-content") || dom.querySelector(".chapter-content") || dom.querySelector(".content-text");
+    }
+
+    removeUnwantedElementsFromContentElement(element) {
+        util.removeChildElementsMatchingSelector(element, ".ads");
+        super.removeUnwantedElementsFromContentElement(element);
     }
 }
