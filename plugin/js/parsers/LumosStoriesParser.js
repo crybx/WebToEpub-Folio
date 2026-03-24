@@ -24,18 +24,10 @@ class LumosStoriesParer extends Parser {
      * @returns {String}
      */
     getBookId(dom) {
+        // URI looks like
         //https://lumostories.com/en/story/216/chapters/
-        if (dom.baseURI.endsWith("/chapters/") || dom.baseURI.endsWith("/chapters")) {
-            let uriArray = dom.baseURI.split("/").filter(Boolean);
-            let id = uriArray[uriArray.length - 2];
-
-            return id;
-        }
         // https://lumostories.com/en/story/216/
-        let uriArray = dom.baseURI.split("/").filter(Boolean);
-        let id = uriArray[uriArray.length - 1];
-
-        return id;
+        return  dom.baseURI.split("/")[5];
     }
 
     /**
@@ -48,7 +40,6 @@ class LumosStoriesParer extends Parser {
         return book.chapters.map((ch) => ({
             sourceUrl: `${this.getApiBaseUrl()}/book_chapters/${ch.id}/content?title=${ch.title}`,
             title: `Chapter ${ch.number} - ${ch.title}`,
-            newArc: null,
             isIncludeable: new Date() >= new Date(ch.release_date)
         })).reverse();
     }
