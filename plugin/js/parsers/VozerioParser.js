@@ -1,6 +1,7 @@
 "use strict";
 
 parserFactory.register("vozer.io", () => new VozerParser());
+parserFactory.register("congphap.com", () => new VozerParser());
 
 class VozerParser extends Parser {
     constructor() {
@@ -24,9 +25,12 @@ class VozerParser extends Parser {
 
         const extractChapters = (docDom) => {
             const list = [];
-            const links = Array.from(docDom.querySelectorAll("table a[href*='/chuong-']"));
+            const links = Array.from(docDom.querySelectorAll("a[href*='/chuong-']"));
 
             links.forEach(link => {
+                const text = link.textContent.trim();
+                if (!text) return; 
+
                 const href = link.getAttribute("href");
                 if (href && !href.includes("#")) {
                     const fullUrl = new URL(href, docDom.baseURI).href;
@@ -35,7 +39,7 @@ class VozerParser extends Parser {
                     if (!addedUrls.has(cleanUrl)) {
                         addedUrls.add(cleanUrl);
                         list.push({
-                            title: link.textContent.trim().replace(/\s+/g, " "),
+                            title: text.replace(/\s+/g, " "),
                             sourceUrl: fullUrl
                         });
                     }
@@ -80,15 +84,23 @@ class VozerParser extends Parser {
     }
 
     extractAuthor(dom) {
-        const pTags = Array.from(dom.querySelectorAll(".p-2.leading-7 p"));
-        const authorP = pTags.find(p => p.textContent.includes("Tác giả:"));
-        return authorP ? authorP.querySelector("strong")?.textContent.trim() : null;
+        const labels = Array.from(dom.querySelectorAll("span, p"));
+        const authorLabel = labels.find(el => el.textContent.includes("Tác giả:"));
+        if (authorLabel) {
+            const strong = authorLabel.parentElement?.querySelector("strong") || authorLabel.querySelector("strong");
+            return strong ? strong.textContent.trim() : null;
+        }
+        return null;
     }
 
     extractSubject(dom) {
-        const pTags = Array.from(dom.querySelectorAll(".p-2.leading-7 p"));
-        const typeP = pTags.find(p => p.textContent.includes("Thể loại:"));
-        return typeP ? typeP.querySelector("a")?.textContent.trim() : null;
+        const labels = Array.from(dom.querySelectorAll("span, p"));
+        const typeLabel = labels.find(el => el.textContent.includes("Thể loại:"));
+        if (typeLabel) {
+            const aTag = typeLabel.parentElement?.querySelector("a") || typeLabel.querySelector("a");
+            return aTag ? aTag.textContent.trim() : null;
+        }
+        return null;
     }
 
     findCoverImageUrl(dom) {
